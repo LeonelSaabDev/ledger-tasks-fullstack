@@ -1,4 +1,6 @@
-﻿namespace TaskManager.Domain.Tasks;
+﻿using TaskManager.Domain.Common;
+
+namespace TaskManager.Domain.Tasks;
 
 public class TaskItem
 {
@@ -14,6 +16,9 @@ public class TaskItem
 
     public static TaskItem Create(string title, string? description, TaskPriority priority, DateOnly? dueDate)
     {
+        if(string.IsNullOrWhiteSpace(title))
+            throw new DomainException("Title is required.");
+
         return new TaskItem
         {
             Id = Guid.NewGuid(),

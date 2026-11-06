@@ -1,4 +1,5 @@
 ﻿using TaskManager.Domain.Tasks;
+using TaskManager.Domain.Common;
 
 namespace TaskManager.Domain.Tests;
 
@@ -16,5 +17,15 @@ public class TaskItemTests
         // Assert
         Assert.Equal(TaskItemStatus.Pending, task.Status);
         Assert.Null(task.CompletedAt);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Create_WithEmptyTitle_ThrowsDomainException(string invalidTitle)
+    {
+        // Act & Assert
+        Assert.Throws<DomainException>(
+            () => TaskItem.Create(invalidTitle, description: null, TaskPriority.Medium, dueDate: null));
     }
 }
