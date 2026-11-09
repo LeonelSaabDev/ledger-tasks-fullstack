@@ -28,4 +28,28 @@ public class TaskItemTests
         Assert.Throws<DomainException>(
             () => TaskItem.Create(invalidTitle, description: null, TaskPriority.Medium, dueDate: null));
     }
+
+    [Fact]
+    public void Create_WithTitleLongerThan200Characters_ThrowsDomainException()
+    {
+        // Arrange
+        var longTitle = new string('a', 201);
+
+        // Act & Assert
+        Assert.Throws<DomainException>(
+            () => TaskItem.Create(longTitle, description: null, TaskPriority.Medium, dueDate: null));
+    }
+
+    [Fact]
+    public void Create_WithTitleOf200Characters_IsValid()
+    {
+        // Arrange
+        var title = new string('a', 200);
+
+        // Act
+        var task = TaskItem.Create(title, description: null, TaskPriority.Medium, dueDate: null);
+
+        // Assert
+        Assert.Equal(title, task.Title);
+    }
 }

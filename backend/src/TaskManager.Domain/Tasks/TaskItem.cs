@@ -4,6 +4,8 @@ namespace TaskManager.Domain.Tasks;
 
 public class TaskItem
 {
+    public const int MaxTitleLength = 200;
+
     public Guid Id { get; private set; }
     public string Title { get; private set; } = string.Empty;
     public string? Description { get; private set; }
@@ -18,6 +20,9 @@ public class TaskItem
     {
         if(string.IsNullOrWhiteSpace(title))
             throw new DomainException("Title is required.");
+
+        if (title.Length > MaxTitleLength)
+            throw new DomainException($"Title cannot exceed {MaxTitleLength} characters.");
 
         return new TaskItem
         {
