@@ -18,16 +18,18 @@ public class TaskItem
 
     public static TaskItem Create(string title, string? description, TaskPriority priority, DateOnly? dueDate)
     {
-        if(string.IsNullOrWhiteSpace(title))
+        if (string.IsNullOrWhiteSpace(title))
             throw new DomainException("Title is required.");
 
-        if (title.Length > MaxTitleLength)
+        var trimmedTitle = title.Trim();
+
+        if (trimmedTitle.Length > MaxTitleLength)
             throw new DomainException($"Title cannot exceed {MaxTitleLength} characters.");
 
         return new TaskItem
         {
             Id = Guid.NewGuid(),
-            Title = title,
+            Title = trimmedTitle,
             Description = description,
             Priority = priority,
             DueDate = dueDate,

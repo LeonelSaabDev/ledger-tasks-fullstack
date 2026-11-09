@@ -52,4 +52,17 @@ public class TaskItemTests
         // Assert
         Assert.Equal(title, task.Title);
     }
+
+    [Fact]
+    public void Create_WithSurroundingSpaces_TrimsTitle()
+    {
+        // Arrange
+        var title = "   Buy milk   ";
+
+        // Act
+        var task = TaskItem.Create(title, description: null, TaskPriority.Medium, dueDate: null);
+
+        // Assert
+        Assert.Equal("Buy milk", task.Title);
+    }
 }
