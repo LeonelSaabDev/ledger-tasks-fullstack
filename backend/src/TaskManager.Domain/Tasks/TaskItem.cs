@@ -44,6 +44,9 @@ public class TaskItem
 
     public void Complete(DateTime now)
     {
+        if (Status == TaskItemStatus.Completed)
+            throw new DomainException("Task is already completed.");
+
         Status = TaskItemStatus.Completed;
         CompletedAt = now;
     }
