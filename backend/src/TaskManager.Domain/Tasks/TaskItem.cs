@@ -36,4 +36,9 @@ public class TaskItem
             Status = TaskItemStatus.Pending
         };
     }
+
+    public void Start()
+    {
+        Status = TaskItemStatus.InProgress;
+    }
 }

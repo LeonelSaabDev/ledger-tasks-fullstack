@@ -65,4 +65,17 @@ public class TaskItemTests
         // Assert
         Assert.Equal("Buy milk", task.Title);
     }
+
+    [Fact]
+    public void Start_WhenPending_ChangesStatusToInProgress()
+    {
+        // Arrange
+        var task = TaskItem.Create("Buy Milk", description: null, TaskPriority.Medium, dueDate: null);
+
+        // Act
+        task.Start();
+
+        //Assert
+        Assert.Equal(TaskItemStatus.InProgress, task.Status);
+    }
 }
