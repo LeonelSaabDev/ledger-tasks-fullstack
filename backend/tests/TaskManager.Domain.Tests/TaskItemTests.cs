@@ -78,4 +78,19 @@ public class TaskItemTests
         //Assert
         Assert.Equal(TaskItemStatus.InProgress, task.Status);
     }
+
+    [Fact]
+    public void Complete_WhenPending_SetsStatusAndCompletedAt()
+    {
+        // Arrange
+        var task = TaskItem.Create("Buy Milk", description: null, TaskPriority.Medium, dueDate: null);
+        var now = new DateTime(2026, 11, 9, 15, 30, 0, DateTimeKind.Utc);
+
+        // Act
+        task.Complete(now);
+
+        // Assert
+        Assert.Equal(TaskItemStatus.Completed, task.Status);
+        Assert.Equal(now, task.CompletedAt);
+    }
 }

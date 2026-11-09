@@ -41,4 +41,10 @@ public class TaskItem
     {
         Status = TaskItemStatus.InProgress;
     }
+
+    public void Complete(DateTime now)
+    {
+        Status = TaskItemStatus.Completed;
+        CompletedAt = now;
+    }
 }
