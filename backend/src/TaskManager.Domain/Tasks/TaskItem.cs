@@ -39,6 +39,9 @@ public class TaskItem
 
     public void Start()
     {
+        if (Status != TaskItemStatus.Pending)
+            throw new DomainException("Only pending tasks can be started.");
+
         Status = TaskItemStatus.InProgress;
     }
 

@@ -80,6 +80,18 @@ public class TaskItemTests
     }
 
     [Fact]
+    public void Start_WhenCompleted_ThrowsDomainException()
+    {
+        // Arrange
+        var task = TaskItem.Create("Buy milk", description: null, TaskPriority.Medium, dueDate: null);
+        var now = new DateTime(2026, 11, 9, 15, 30, 0, DateTimeKind.Utc);
+        task.Complete(now);
+
+        // Act & Assert
+        Assert.Throws<DomainException>(() => task.Start());
+    }
+
+    [Fact]
     public void Complete_WhenPending_SetsStatusAndCompletedAt()
     {
         // Arrange
