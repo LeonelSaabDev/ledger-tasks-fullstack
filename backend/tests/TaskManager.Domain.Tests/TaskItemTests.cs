@@ -105,4 +105,30 @@ public class TaskItemTests
         // Act & Assert
         Assert.Throws<DomainException>(() => task.Complete(now));
     }
+
+    [Fact]
+    public void Reopen_WhenCompleted_ReturnsToPendingAndClearsCompletedAt()
+    {
+        // Arrange
+        var task = TaskItem.Create("Buy milk", description: null, TaskPriority.Medium, dueDate: null);
+        var now = new DateTime(2026, 11, 9, 15, 30, 0, DateTimeKind.Utc);
+        task.Complete(now);
+
+        // Act
+        task.Reopen();
+
+        // Assert
+        Assert.Equal(TaskItemStatus.Pending, task.Status);
+        Assert.Null(task.CompletedAt);
+    }
+
+    [Fact]
+    public void Reopen_WhenNotCompleted_ThrowsDomainException()
+    {
+        // Arrange
+        var task = TaskItem.Create("Buy milk", description: null, TaskPriority.Medium, dueDate: null);
+
+        // Act & Assert
+        Assert.Throws<DomainException>(() => task.Reopen());
+    }
 }

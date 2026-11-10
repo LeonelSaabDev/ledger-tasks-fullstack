@@ -50,4 +50,13 @@ public class TaskItem
         Status = TaskItemStatus.Completed;
         CompletedAt = now;
     }
+
+    public void Reopen()
+    {
+        if (Status != TaskItemStatus.Completed)
+            throw new DomainException("Only completed tasks can be reopened.");
+
+        Status = TaskItemStatus.Pending;
+        CompletedAt = null;
+    }
 }
