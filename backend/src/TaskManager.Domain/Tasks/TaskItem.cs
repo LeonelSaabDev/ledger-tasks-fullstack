@@ -18,18 +18,10 @@ public class TaskItem
 
     public static TaskItem Create(string title, string? description, TaskPriority priority, DateOnly? dueDate)
     {
-        if (string.IsNullOrWhiteSpace(title))
-            throw new DomainException("Title is required.");
-
-        var trimmedTitle = title.Trim();
-
-        if (trimmedTitle.Length > MaxTitleLength)
-            throw new DomainException($"Title cannot exceed {MaxTitleLength} characters.");
-
         return new TaskItem
         {
             Id = Guid.NewGuid(),
-            Title = trimmedTitle,
+            Title = NormalizeTitle(title),
             Description = description,
             Priority = priority,
             DueDate = dueDate,
@@ -61,5 +53,26 @@ public class TaskItem
 
         Status = TaskItemStatus.Pending;
         CompletedAt = null;
+    }
+
+    public void UpdateDetails(string title, string? description, TaskPriority priority, DateOnly? dueDate)
+    {
+        Title = NormalizeTitle(title);
+        Description = description;
+        Priority = priority;
+        DueDate = dueDate;
+    }
+
+    private static string NormalizeTitle(string title)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+            throw new DomainException("Title is required.");
+
+        var trimmedTitle = title.Trim();
+
+        if (trimmedTitle.Length > MaxTitleLength)
+            throw new DomainException($"Title cannot exceed {MaxTitleLength} characters.");
+
+        return trimmedTitle;
     }
 }

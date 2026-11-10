@@ -143,4 +143,23 @@ public class TaskItemTests
         // Act & Assert
         Assert.Throws<DomainException>(() => task.Reopen());
     }
+
+    [Fact]
+    public void UpdateDetails_WhenCompleted_UpdatesDetailsAndKeepsStatus()
+    {
+        // Arrange
+        var task = TaskItem.Create("Buy milk", description: null, TaskPriority.Low, dueDate: null);
+        var now = new DateTime(2026, 11, 9, 15, 30, 0, DateTimeKind.Utc);
+        task.Complete(now);
+
+        // Act
+        task.UpdateDetails("Buy oat milk", "From the organic store", TaskPriority.High, dueDate: null);
+
+        // Assert
+        Assert.Equal("Buy oat milk", task.Title);
+        Assert.Equal("From the organic store", task.Description);
+        Assert.Equal(TaskPriority.High, task.Priority);
+        Assert.Equal(TaskItemStatus.Completed, task.Status);
+        Assert.Equal(now, task.CompletedAt);
+    }
 }
