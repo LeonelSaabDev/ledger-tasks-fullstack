@@ -5,6 +5,8 @@ namespace TaskManager.Domain.Tests;
 
 public class TaskItemTests
 {
+    private static readonly DateTime Now = new(2026, 11, 12, 10, 0, 0, DateTimeKind.Utc);
+
     [Fact]
     public void Create_WithValidData_StartsAsPendingWithoutCompletedAt()
     {
@@ -12,7 +14,7 @@ public class TaskItemTests
         var title = "Buy groceries";
 
         // Act
-        var task = TaskItem.Create(title, description: null, TaskPriority.Medium, dueDate: null);
+        var task = TaskItem.Create(title, description: null, TaskPriority.Medium, dueDate: null, Now);
 
         // Assert
         Assert.Equal(TaskItemStatus.Pending, task.Status);
@@ -26,7 +28,7 @@ public class TaskItemTests
     {
         // Act & Assert
         Assert.Throws<DomainException>(
-            () => TaskItem.Create(invalidTitle, description: null, TaskPriority.Medium, dueDate: null));
+            () => TaskItem.Create(invalidTitle, description: null, TaskPriority.Medium, dueDate: null, Now));
     }
 
     [Fact]
@@ -37,7 +39,7 @@ public class TaskItemTests
 
         // Act & Assert
         Assert.Throws<DomainException>(
-            () => TaskItem.Create(longTitle, description: null, TaskPriority.Medium, dueDate: null));
+            () => TaskItem.Create(longTitle, description: null, TaskPriority.Medium, dueDate: null, Now));
     }
 
     [Fact]
@@ -47,7 +49,7 @@ public class TaskItemTests
         var title = new string('a', 200);
 
         // Act
-        var task = TaskItem.Create(title, description: null, TaskPriority.Medium, dueDate: null);
+        var task = TaskItem.Create(title, description: null, TaskPriority.Medium, dueDate: null, Now);
 
         // Assert
         Assert.Equal(title, task.Title);
@@ -60,7 +62,7 @@ public class TaskItemTests
         var title = "   Buy milk   ";
 
         // Act
-        var task = TaskItem.Create(title, description: null, TaskPriority.Medium, dueDate: null);
+        var task = TaskItem.Create(title, description: null, TaskPriority.Medium, dueDate: null, Now);
 
         // Assert
         Assert.Equal("Buy milk", task.Title);
@@ -70,7 +72,7 @@ public class TaskItemTests
     public void Start_WhenPending_ChangesStatusToInProgress()
     {
         // Arrange
-        var task = TaskItem.Create("Buy Milk", description: null, TaskPriority.Medium, dueDate: null);
+        var task = TaskItem.Create("Buy Milk", description: null, TaskPriority.Medium, dueDate: null, Now);
 
         // Act
         task.Start();
@@ -83,7 +85,7 @@ public class TaskItemTests
     public void Start_WhenCompleted_ThrowsDomainException()
     {
         // Arrange
-        var task = TaskItem.Create("Buy milk", description: null, TaskPriority.Medium, dueDate: null);
+        var task = TaskItem.Create("Buy milk", description: null, TaskPriority.Medium, dueDate: null, Now);
         var now = new DateTime(2026, 11, 9, 15, 30, 0, DateTimeKind.Utc);
         task.Complete(now);
 
@@ -95,7 +97,7 @@ public class TaskItemTests
     public void Complete_WhenPending_SetsStatusAndCompletedAt()
     {
         // Arrange
-        var task = TaskItem.Create("Buy Milk", description: null, TaskPriority.Medium, dueDate: null);
+        var task = TaskItem.Create("Buy Milk", description: null, TaskPriority.Medium, dueDate: null, Now);
         var now = new DateTime(2026, 11, 9, 15, 30, 0, DateTimeKind.Utc);
 
         // Act
@@ -110,7 +112,7 @@ public class TaskItemTests
     public void Complete_WhenAlreadyCompleted_ThrowsDomainException()
     {
         // Arrange
-        var task = TaskItem.Create("Buy milk", description: null, TaskPriority.Medium, dueDate: null);
+        var task = TaskItem.Create("Buy milk", description: null, TaskPriority.Medium, dueDate: null, Now);
         var now = new DateTime(2026, 11, 9, 15, 30, 0, DateTimeKind.Utc);
         task.Complete(now);
 
@@ -122,7 +124,7 @@ public class TaskItemTests
     public void Reopen_WhenCompleted_ReturnsToPendingAndClearsCompletedAt()
     {
         // Arrange
-        var task = TaskItem.Create("Buy milk", description: null, TaskPriority.Medium, dueDate: null);
+        var task = TaskItem.Create("Buy milk", description: null, TaskPriority.Medium, dueDate: null, Now);
         var now = new DateTime(2026, 11, 9, 15, 30, 0, DateTimeKind.Utc);
         task.Complete(now);
 
@@ -138,7 +140,7 @@ public class TaskItemTests
     public void Reopen_WhenNotCompleted_ThrowsDomainException()
     {
         // Arrange
-        var task = TaskItem.Create("Buy milk", description: null, TaskPriority.Medium, dueDate: null);
+        var task = TaskItem.Create("Buy milk", description: null, TaskPriority.Medium, dueDate: null, Now);
 
         // Act & Assert
         Assert.Throws<DomainException>(() => task.Reopen());
@@ -148,7 +150,7 @@ public class TaskItemTests
     public void UpdateDetails_WhenCompleted_UpdatesDetailsAndKeepsStatus()
     {
         // Arrange
-        var task = TaskItem.Create("Buy milk", description: null, TaskPriority.Low, dueDate: null);
+        var task = TaskItem.Create("Buy milk", description: null, TaskPriority.Low, dueDate: null, Now);
         var now = new DateTime(2026, 11, 9, 15, 30, 0, DateTimeKind.Utc);
         task.Complete(now);
 
@@ -169,10 +171,22 @@ public class TaskItemTests
     public void UpdateDetails_WithEmptyTitle_ThrowsDomainException(string invalidTitle)
     {
         // Arrange
-        var task = TaskItem.Create("Buy milk", description: null, TaskPriority.Medium, dueDate: null);
+        var task = TaskItem.Create("Buy milk", description: null, TaskPriority.Medium, dueDate: null, Now);
 
         // Act & Assert
         Assert.Throws<DomainException>(
             () => task.UpdateDetails(invalidTitle, description: null, TaskPriority.Medium, dueDate: null));
+    }
+
+    [Fact]
+    public void Create_WithDueDateInThePast_ThrowsDomainException()
+    {
+        // Arrange
+        var now = new DateTime(2026, 11, 12, 10, 0, 0, DateTimeKind.Utc);
+        var yesterday = new DateOnly(2026, 11, 11);
+
+        // Act & Assert
+        Assert.Throws<DomainException>(
+            () => TaskItem.Create("Buy milk", description: null, TaskPriority.Medium, yesterday, now));
     }
 }

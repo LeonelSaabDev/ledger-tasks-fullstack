@@ -12,12 +12,16 @@ public class TaskItem
     public TaskItemStatus Status { get; private set; }
     public TaskPriority Priority { get; private set; }
     public DateOnly? DueDate { get; private set; }
+    public DateTime CreatedAt { get; private set; }
     public DateTime? CompletedAt { get; private set; }
 
     private TaskItem() { }
 
-    public static TaskItem Create(string title, string? description, TaskPriority priority, DateOnly? dueDate)
+    public static TaskItem Create(string title, string? description, TaskPriority priority, DateOnly? dueDate, DateTime now)
     {
+        if (dueDate is not null && dueDate < DateOnly.FromDateTime(now))
+            throw new DomainException("Due date cannot be in the past.");
+
         return new TaskItem
         {
             Id = Guid.NewGuid(),
@@ -25,7 +29,8 @@ public class TaskItem
             Description = description,
             Priority = priority,
             DueDate = dueDate,
-            Status = TaskItemStatus.Pending
+            Status = TaskItemStatus.Pending,
+            CreatedAt = now
         };
     }
 
