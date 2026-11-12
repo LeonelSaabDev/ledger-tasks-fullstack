@@ -162,4 +162,17 @@ public class TaskItemTests
         Assert.Equal(TaskItemStatus.Completed, task.Status);
         Assert.Equal(now, task.CompletedAt);
     }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void UpdateDetails_WithEmptyTitle_ThrowsDomainException(string invalidTitle)
+    {
+        // Arrange
+        var task = TaskItem.Create("Buy milk", description: null, TaskPriority.Medium, dueDate: null);
+
+        // Act & Assert
+        Assert.Throws<DomainException>(
+            () => task.UpdateDetails(invalidTitle, description: null, TaskPriority.Medium, dueDate: null));
+    }
 }
