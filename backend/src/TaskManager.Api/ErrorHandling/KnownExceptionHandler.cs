@@ -20,6 +20,8 @@ public class KnownExceptionHandler(IProblemDetailsService problemDetailsService)
         {
             DomainException => (StatusCodes.Status400BadRequest, "Business rule violated"),
             NotFoundException => (StatusCodes.Status404NotFound, "Resource not found"),
+            // Thrown by minimal APIs when a route/query value cannot be bound, e.g. ?view=Banana.
+            BadHttpRequestException badRequest => (badRequest.StatusCode, "Invalid request"),
             _ => (0, string.Empty)
         };
 

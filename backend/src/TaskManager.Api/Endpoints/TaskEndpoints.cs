@@ -1,4 +1,5 @@
 ﻿using TaskManager.Application.Tasks;
+using TaskManager.Domain.Tasks;
 
 namespace TaskManager.Api.Endpoints;
 
@@ -8,8 +9,11 @@ public static class TaskEndpoints
     {
         var group = app.MapGroup("/api/tasks").WithTags("Tasks");
 
-        group.MapGet("/", async (TaskService service, CancellationToken cancellationToken) =>
-            TypedResults.Ok(await service.GetAllAsync(cancellationToken)));
+        group.MapGet("/", async ([AsParameters] TaskListParameters parameters, TaskService service, CancellationToken cancellationToken) =>
+            TypedResults.Ok(await service.SearchAsync(parameters.ToQuery(), cancellationToken)));
+
+        group.MapGet("/summary", async (TaskService service, CancellationToken cancellationToken) =>
+            TypedResults.Ok(await service.GetSummaryAsync(cancellationToken)));
 
         group.MapGet("/{id:guid}", async (Guid id, TaskService service, CancellationToken cancellationToken) =>
             TypedResults.Ok(await service.GetByIdAsync(id, cancellationToken)));
@@ -41,4 +45,27 @@ public static class TaskEndpoints
 
         return app;
     }
+}
+
+/// <summary>
+/// Query string for GET /api/tasks, e.g. ?view=Open&amp;search=milk&amp;sortBy=DueDate&amp;direction=Asc&amp;page=2.
+/// Every value is optional; the defaults live in <see cref="TaskQuery"/>.
+/// </summary>
+public record TaskListParameters(
+    TaskView? View,
+    string? Search,
+    TaskPriority? Priority,
+    TaskSortBy? SortBy,
+    SortDirection? Direction,
+    int? Page,
+    int? PageSize)
+{
+    public TaskQuery ToQuery() => new(
+        View ?? TaskView.Open,
+        Search,
+        Priority,
+        SortBy ?? TaskSortBy.CreatedAt,
+        Direction ?? SortDirection.Desc,
+        Page ?? 1,
+        PageSize ?? TaskQuery.DefaultPageSize);
 }
