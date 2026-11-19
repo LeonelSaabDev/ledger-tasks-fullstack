@@ -3,6 +3,12 @@
     <span class="brand__mark" aria-hidden="true">✓</span>
     <span class="brand__name">Ledger</span>
   </a>
+
+  <nav class="nav" aria-label="Views">
+    <a routerLink="/tasks" routerLinkActive="nav__link--active" class="nav__link">List</a>
+    <a routerLink="/board" routerLinkActive="nav__link--active" class="nav__link">Board</a>
+  </nav>
+
   <span class="masthead__date mono">{{ today | date: 'EEEE, d MMMM y' }}</span>
 </header>
 

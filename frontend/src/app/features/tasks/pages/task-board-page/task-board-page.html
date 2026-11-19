@@ -1,0 +1,64 @@
+@let cols = columns();
+
+<section class="heading">
+  <h1 class="headline">Board</h1>
+  <a routerLink="/tasks/new" class="btn btn--primary">+ New task</a>
+</section>
+
+<p class="hint mono">Drag a card to change its state. Faded columns don't accept that move.</p>
+
+@if (moveError(); as error) {
+  <p class="alert" role="alert">{{ error }}</p>
+}
+
+@if (loadError(); as error) {
+  <div class="state">
+    <p class="alert" role="alert">{{ error }}</p>
+    <button type="button" class="btn" (click)="reload()">Try again</button>
+  </div>
+} @else if (isLoading() && !cols.Pending.length && !cols.InProgress.length && !cols.Completed.length) {
+  <p class="mono">Loading board…</p>
+} @else {
+  <div class="board" cdkDropListGroup>
+    @for (col of columnDefs; track col.status) {
+      <section
+        class="column"
+        [class.column--allowed]="isTarget(col.status) === 'allowed'"
+        [class.column--blocked]="isTarget(col.status) === 'blocked'"
+        [attr.aria-label]="col.label">
+        <header class="column__header">
+          <h2>{{ col.label }}</h2>
+          <span class="mono">
+            @if (col.status === 'Completed' && doneTotal() > cols.Completed.length) {
+              latest {{ cols.Completed.length }} of {{ doneTotal() }}
+            } @else {
+              {{ cols[col.status].length }}
+            }
+          </span>
+        </header>
+
+        <div
+          class="column__list"
+          cdkDropList
+          [cdkDropListData]="col.status"
+          [cdkDropListSortingDisabled]="true"
+          [cdkDropListEnterPredicate]="allowDrop"
+          (cdkDropListDropped)="drop($event)">
+          @for (task of cols[col.status]; track task.id) {
+            <div
+              class="draggable"
+              cdkDrag
+              [cdkDragData]="task"
+              (cdkDragStarted)="dragging.set(task.status)"
+              (cdkDragEnded)="dragging.set(null)">
+              <app-board-card [task]="task" (edit)="edit(task)" />
+              <div class="placeholder" *cdkDragPlaceholder></div>
+            </div>
+          } @empty {
+            <p class="column__empty mono">Drop here</p>
+          }
+        </div>
+      </section>
+    }
+  </div>
+}

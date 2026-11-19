@@ -1,9 +1,9 @@
 import { DatePipe } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 @Component({
-  imports: [RouterOutlet, RouterLink, DatePipe],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, DatePipe],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',

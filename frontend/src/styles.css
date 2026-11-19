@@ -163,6 +163,12 @@ textarea {
   font-size: 0.9rem;
 }
 
+/* Board drag preview: the CDK appends it to <body>, outside any component's styles. */
+.cdk-drag-preview {
+  box-shadow: 0 18px 30px -12px rgb(0 0 0 / 0.45);
+  transform: rotate(-2deg);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

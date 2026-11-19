@@ -18,12 +18,15 @@ export class TasksApi {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/tasks`;
 
-  search(query: TaskListQuery): Observable<PagedResult<Task>> {
+  /** @param pageSize Omit to use the API default; the board asks for bigger pages. */
+  search(query: TaskListQuery, pageSize?: number): Observable<PagedResult<Task>> {
     let params = new HttpParams()
       .set('view', query.view)
       .set('sortBy', query.sortBy)
       .set('direction', query.direction)
       .set('page', query.page);
+
+    if (pageSize) params = params.set('pageSize', pageSize);
 
     const search = query.search.trim();
     if (search) params = params.set('search', search);

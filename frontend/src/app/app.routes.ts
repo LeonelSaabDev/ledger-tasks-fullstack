@@ -8,6 +8,11 @@ export const routes: Routes = [
       import('./features/tasks/pages/task-list-page/task-list-page').then((m) => m.TaskListPage),
   },
   {
+    path: 'board',
+    loadComponent: () =>
+      import('./features/tasks/pages/task-board-page/task-board-page').then((m) => m.TaskBoardPage),
+  },
+  {
     path: 'tasks/new',
     loadComponent: () =>
       import('./features/tasks/pages/task-form-page/task-form-page').then((m) => m.TaskFormPage),

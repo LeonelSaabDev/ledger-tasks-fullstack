@@ -1,0 +1,110 @@
+:host {
+  display: block;
+}
+
+.heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.headline {
+  font-size: clamp(2rem, 6vw, 3.25rem);
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.hint {
+  margin: 0.5rem 0 1.5rem;
+  color: var(--ink-faint);
+}
+
+.alert {
+  margin: 0 0 1rem;
+}
+
+.state {
+  display: grid;
+  justify-items: start;
+  gap: 0.75rem;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .board {
+    grid-template-columns: 1fr;
+  }
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  min-height: 12rem;
+  padding: 0.75rem;
+  background: color-mix(in srgb, var(--paper-raised) 60%, transparent);
+  border: 1px dashed var(--rule);
+  border-radius: var(--radius);
+  transition: opacity 150ms ease, border-color 150ms ease, background-color 150ms ease;
+}
+
+/* While dragging: light up valid targets, fade invalid ones. */
+.column--allowed {
+  border-color: var(--accent);
+  border-style: solid;
+  background: color-mix(in srgb, var(--accent-soft) 45%, transparent);
+}
+
+.column--blocked {
+  opacity: 0.35;
+}
+
+.column__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0.25rem 0.25rem 0.75rem;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 0.75rem;
+}
+
+.column__header h2 {
+  font-size: 1.1rem;
+}
+
+.column__header .mono {
+  color: var(--ink-faint);
+}
+
+.column__list {
+  display: grid;
+  gap: 0.6rem;
+  flex: 1;
+  align-content: start;
+  min-height: 6rem;
+}
+
+.column__empty {
+  margin: 0;
+  padding: 1.5rem 0;
+  text-align: center;
+  color: var(--ink-faint);
+}
+
+/* The drag preview is attached to <body>, so its styles live in styles.css. */
+.cdk-drag-animating {
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.placeholder {
+  min-height: 3.5rem;
+  border: 2px dashed var(--accent);
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+}
