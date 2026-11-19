@@ -8,6 +8,12 @@ public record CreateTaskRequest(
     TaskPriority Priority,
     DateOnly? DueDate);
 
+public record UpdateTaskRequest(
+    string Title,
+    string? Description,
+    TaskPriority Priority,
+    DateOnly? DueDate);
+
 public record TaskResponse(
     Guid Id,
     string Title,
