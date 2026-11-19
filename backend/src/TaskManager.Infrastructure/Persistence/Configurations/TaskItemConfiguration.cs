@@ -24,5 +24,17 @@ public class TaskItemConfiguration : IEntityTypeConfiguration<TaskItem>
         builder.Property(t => t.Priority)
             .HasConversion<string>()
             .HasMaxLength(20);
+
+        builder.Property(t => t.CreatedAt)
+            .HasConversion(
+                value => value,
+                value => DateTime.SpecifyKind(value, DateTimeKind.Utc));
+
+        builder.Property(t => t.CompletedAt)
+            .HasConversion(
+                value => value,
+                value => value.HasValue
+                    ? DateTime.SpecifyKind(value.Value, DateTimeKind.Utc)
+                    : null);
     }
 }
