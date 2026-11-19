@@ -1,0 +1,13 @@
+<p class="eyebrow mono">{{ isEditing() ? 'Edit task' : 'New task' }}</p>
+
+@if (saveError(); as error) {
+  <p class="alert" role="alert">{{ error }}</p>
+}
+
+@if (task.isLoading()) {
+  <p class="mono">Loading task…</p>
+} @else if (loadError(); as error) {
+  <p class="alert" role="alert">{{ error }}</p>
+} @else {
+  <app-task-form [task]="task.value() ?? null" [saving]="saving()" (save)="save($event)" (cancel)="cancel()" />
+}

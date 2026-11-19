@@ -1,0 +1,50 @@
+@let title = form.controls.title;
+
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <label class="field field--title">
+    <span class="label mono">What needs doing?</span>
+    <input
+      type="text"
+      formControlName="title"
+      placeholder="Write the task…"
+      [attr.maxlength]="titleMaxLength"
+      [attr.aria-invalid]="title.invalid && title.touched"
+      autofocus />
+    <span class="hint mono">{{ title.value.length }} / {{ titleMaxLength }}</span>
+    @if (title.touched && (title.hasError('required') || title.hasError('blank'))) {
+      <span class="error">The title is required.</span>
+    }
+  </label>
+
+  <label class="field">
+    <span class="label mono">Notes</span>
+    <textarea formControlName="description" rows="4" placeholder="Optional details"></textarea>
+  </label>
+
+  <div class="row">
+    <fieldset class="field">
+      <legend class="label mono">Priority</legend>
+      <div class="segmented">
+        @for (priority of priorities; track priority) {
+          <label class="segment" [class.segment--active]="form.controls.priority.value === priority">
+            <input type="radio" formControlName="priority" [value]="priority" />
+            {{ priority }}
+          </label>
+        }
+      </div>
+    </fieldset>
+
+    <label class="field">
+      <span class="label mono">Due date</span>
+      <!-- Past dates are only blocked when creating, matching the domain rule. -->
+      <input type="date" formControlName="dueDate" [attr.min]="isEditing ? null : today" />
+    </label>
+  </div>
+
+  <div class="footer">
+    <button type="button" class="btn btn--ghost" (click)="cancel.emit()">Cancel</button>
+    <button type="submit" class="btn btn--primary" [disabled]="saving()">
+      {{ saving() ? 'Saving…' : isEditing ? 'Save changes' : 'Add task' }}
+    </button>
+  </div>
+</form>

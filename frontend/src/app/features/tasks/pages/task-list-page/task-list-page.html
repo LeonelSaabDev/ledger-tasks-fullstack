@@ -1,0 +1,65 @@
+@let c = counts();
+
+<section class="summary">
+  <div>
+    <h1 class="headline">
+      @if (c.open === 0 && c.all > 0) {
+        All clear.
+      } @else {
+        <span class="headline__count">{{ c.open }}</span> {{ c.open === 1 ? 'thing' : 'things' }} to do.
+      }
+    </h1>
+    @if (c.overdue > 0) {
+      <p class="overdue mono">{{ c.overdue }} overdue</p>
+    }
+  </div>
+  <a routerLink="/tasks/new" class="btn btn--primary">+ New task</a>
+</section>
+
+<nav class="tabs" aria-label="Filter tasks">
+  @for (f of filters; track f.value) {
+    <button
+      type="button"
+      class="tab"
+      [class.tab--active]="filter() === f.value"
+      [attr.aria-pressed]="filter() === f.value"
+      (click)="filter.set(f.value)">
+      {{ f.label }} <span class="mono">{{ c[f.value] }}</span>
+    </button>
+  }
+</nav>
+
+@if (actionError(); as error) {
+  <p class="alert" role="alert">{{ error }}</p>
+}
+
+@if (tasks.isLoading()) {
+  <p class="state mono">Loading tasks…</p>
+} @else if (loadError(); as error) {
+  <div class="state">
+    <p class="alert" role="alert">{{ error }}</p>
+    <button type="button" class="btn" (click)="tasks.reload()">Try again</button>
+  </div>
+} @else {
+  <ol class="list">
+    @for (task of visible(); track task.id; let i = $index) {
+      <li [style.animation-delay.ms]="i * 40">
+        <app-task-card
+          [task]="task"
+          [busy]="busyId() === task.id"
+          (transition)="changeStatus(task, $event)"
+          (edit)="edit(task)"
+          (remove)="remove(task)" />
+      </li>
+    } @empty {
+      <li class="empty">
+        <p class="empty__title">
+          {{ filter() === 'done' ? 'Nothing finished yet.' : 'Your page is blank.' }}
+        </p>
+        @if (filter() !== 'done') {
+          <a routerLink="/tasks/new" class="btn">Write the first task</a>
+        }
+      </li>
+    }
+  </ol>
+}

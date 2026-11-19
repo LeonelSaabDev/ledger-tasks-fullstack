@@ -1,0 +1,48 @@
+@let t = task();
+
+<article class="card">
+  <button
+    type="button"
+    class="check"
+    [class.check--done]="t.status === 'Completed'"
+    [disabled]="busy()"
+    [attr.aria-label]="t.status === 'Completed' ? 'Reopen ' + t.title : 'Complete ' + t.title"
+    (click)="transition.emit(t.status === 'Completed' ? 'reopen' : 'complete')">
+    <span aria-hidden="true">✓</span>
+  </button>
+
+  <div class="body">
+    <div class="meta mono">
+      <span class="status status--{{ t.status }}">{{ statusLabel() }}</span>
+      <span class="priority priority--{{ t.priority }}">{{ t.priority }} priority</span>
+      @if (t.dueDate) {
+        <span class="due" [class.due--late]="overdue()">
+          {{ overdue() ? 'Overdue ·' : 'Due' }} {{ t.dueDate | date: 'd MMM' }}
+        </span>
+      }
+    </div>
+
+    <h3 class="title">{{ t.title }}</h3>
+
+    @if (t.description) {
+      <p class="description">{{ t.description }}</p>
+    }
+
+    <div class="actions">
+      @if (t.status === 'Pending') {
+        <button type="button" class="btn btn--small" [disabled]="busy()" (click)="transition.emit('start')">
+          Start
+        </button>
+      }
+      <button type="button" class="btn btn--small btn--ghost" [disabled]="busy()" (click)="edit.emit()">
+        Edit
+      </button>
+      <button type="button" class="btn btn--small btn--ghost" [disabled]="busy()" (click)="remove.emit()">
+        Delete
+      </button>
+      @if (t.completedAt) {
+        <span class="completed-at mono">Done {{ t.completedAt | date: 'd MMM, HH:mm' }}</span>
+      }
+    </div>
+  </div>
+</article>

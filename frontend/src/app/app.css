@@ -1,0 +1,45 @@
+:host {
+  display: block;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 1rem 4rem;
+}
+
+.masthead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 2rem 0 1rem;
+  border-bottom: 3px double var(--ink);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.brand__mark {
+  color: var(--accent);
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.brand__name {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.masthead__date {
+  color: var(--ink-soft);
+  text-transform: uppercase;
+}
+
+.page {
+  padding-top: 2rem;
+}
