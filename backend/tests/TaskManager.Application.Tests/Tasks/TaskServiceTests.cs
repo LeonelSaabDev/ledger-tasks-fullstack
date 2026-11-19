@@ -90,6 +90,33 @@ public class TaskServiceTests
     }
 
     [Fact]
+    public async Task SearchAsync_MapsThePageToResponses()
+    {
+        await CreateTaskAsync("first");
+        await CreateTaskAsync("second");
+
+        var page = await _service.SearchAsync(new TaskQuery(TaskView.All, pageSize: 1), CancellationToken.None);
+
+        Assert.Single(page.Items);
+        Assert.Equal(2, page.TotalCount);
+        Assert.Equal(2, page.TotalPages);
+    }
+
+    [Fact]
+    public async Task GetSummaryAsync_CountsOverdueAgainstToday()
+    {
+        var tomorrow = DateOnly.FromDateTime(Now.UtcDateTime).AddDays(1);
+        await _service.CreateAsync(
+            new CreateTaskRequest("due tomorrow", null, TaskPriority.Medium, tomorrow), CancellationToken.None);
+        _timeProvider.Advance(TimeSpan.FromDays(3));
+
+        var summary = await _service.GetSummaryAsync(CancellationToken.None);
+
+        Assert.Equal(1, summary.Open);
+        Assert.Equal(1, summary.Overdue);
+    }
+
+    [Fact]
     public async Task DeleteAsync_RemovesTheTask()
     {
         var created = await CreateTaskAsync();

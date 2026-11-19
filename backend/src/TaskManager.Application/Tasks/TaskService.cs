@@ -5,11 +5,15 @@ namespace TaskManager.Application.Tasks;
 
 public class TaskService(ITaskRepository repository, TimeProvider timeProvider)
 {
-    public async Task<IReadOnlyList<TaskResponse>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<PagedResult<TaskResponse>> SearchAsync(TaskQuery query, CancellationToken cancellationToken)
     {
-        var tasks = await repository.GetAllAsync(cancellationToken);
-        return tasks.Select(TaskResponse.FromEntity).ToList();
+        var page = await repository.SearchAsync(query, cancellationToken);
+        return new PagedResult<TaskResponse>(
+            page.Items.Select(TaskResponse.FromEntity).ToList(), page.Page, page.PageSize, page.TotalCount);
     }
+
+    public Task<TaskSummary> GetSummaryAsync(CancellationToken cancellationToken) =>
+        repository.GetSummaryAsync(DateOnly.FromDateTime(UtcNow()), cancellationToken);
 
     public async Task<TaskResponse> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
