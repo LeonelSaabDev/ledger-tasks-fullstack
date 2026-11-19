@@ -1,6 +1,15 @@
-@TaskManager.Api_HostAddress = http://localhost:5109
+@baseUrl = http://localhost:5109
 
-GET {{TaskManager.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+### Create a task
+POST {{baseUrl}}/api/tasks
+Content-Type: application/json
 
-###
+{
+  "title": "Learn minimal APIs",
+  "description": "Build the task manager",
+  "priority": "High",
+  "dueDate": null
+}
+
+### Get all tasks
+GET {{baseUrl}}/api/tasks
