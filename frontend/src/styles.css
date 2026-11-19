@@ -16,9 +16,9 @@
   --progress: #2f5d8a;
   --progress-soft: #d9e4ef;
 
-  --font-display: 'Fraunces', Georgia, serif;
-  --font-body: 'Instrument Sans', 'Segoe UI', sans-serif;
-  --font-mono: 'IBM Plex Mono', Consolas, monospace;
+  --font-display: 'Bricolage Grotesque', 'Segoe UI', sans-serif;
+  --font-body: 'Geist', 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono', Consolas, monospace;
 
   --radius: 4px;
   --shadow: 0 1px 0 var(--rule), 0 12px 24px -18px rgb(29 26 22 / 0.35);
