@@ -19,6 +19,19 @@ describe('TasksApi', () => {
 
   afterEach(() => http.verify());
 
+  it('sends the list query as query string and skips a blank search', () => {
+    api
+      .search({ view: 'Done', search: '   ', sortBy: 'Priority', direction: 'Asc', page: 2 })
+      .subscribe();
+
+    const request = http.expectOne((r) => r.url === baseUrl);
+    expect(request.request.params.get('view')).toBe('Done');
+    expect(request.request.params.get('sortBy')).toBe('Priority');
+    expect(request.request.params.get('page')).toBe('2');
+    expect(request.request.params.has('search')).toBe(false);
+    request.flush({ items: [], page: 2, pageSize: 10, totalCount: 0, totalPages: 1 });
+  });
+
   it('posts to the transition endpoint for state changes', () => {
     api.transition('abc', 'complete').subscribe();
 

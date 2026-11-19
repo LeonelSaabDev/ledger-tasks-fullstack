@@ -1,48 +1,76 @@
-@let c = counts();
+@let s = summary.value();
+@let q = query();
+@let result = tasks.value();
 
 <section class="summary">
   <div>
     <h1 class="headline">
-      @if (c.open === 0 && c.all > 0) {
+      @if (!s) {
+        &nbsp;
+      } @else if (s.open === 0 && s.total > 0) {
         All clear.
       } @else {
-        <span class="headline__count">{{ c.open }}</span> {{ c.open === 1 ? 'thing' : 'things' }} to do.
+        <span class="headline__count">{{ s.open }}</span> {{ s.open === 1 ? 'thing' : 'things' }} to do.
       }
     </h1>
-    @if (c.overdue > 0) {
-      <p class="overdue mono">{{ c.overdue }} overdue</p>
+    @if (s && s.overdue > 0) {
+      <p class="overdue mono">{{ s.overdue }} overdue</p>
     }
   </div>
   <a routerLink="/tasks/new" class="btn btn--primary">+ New task</a>
 </section>
 
 <nav class="tabs" aria-label="Filter tasks">
-  @for (f of filters; track f.value) {
+  @for (v of views; track v.value) {
     <button
       type="button"
       class="tab"
-      [class.tab--active]="filter() === f.value"
-      [attr.aria-pressed]="filter() === f.value"
-      (click)="filter.set(f.value)">
-      {{ f.label }} <span class="mono">{{ c[f.value] }}</span>
+      [class.tab--active]="q.view === v.value"
+      [attr.aria-pressed]="q.view === v.value"
+      (click)="setView(v.value)">
+      {{ v.label }} <span class="mono">{{ s ? s[v.count] : '·' }}</span>
     </button>
   }
 </nav>
+
+<div class="toolbar">
+  <label class="search">
+    <span class="visually-hidden">Search tasks</span>
+    <span class="search__icon" aria-hidden="true">⌕</span>
+    <input
+      type="search"
+      placeholder="Search by title…"
+      [value]="searchText()"
+      (input)="onSearchInput($any($event.target).value)" />
+    @if (searchText()) {
+      <button type="button" class="search__clear" aria-label="Clear search" (click)="clearSearch()">×</button>
+    }
+  </label>
+
+  <label class="sort">
+    <span class="mono">Sort</span>
+    <!-- [selected] per option, not [value] on the select: the options don't exist yet when [value] is applied. -->
+    <select (change)="setSort($any($event.target).value)">
+      @for (option of sorts; track option.value) {
+        <option [value]="option.value" [selected]="option.value === sortValue()">{{ option.label }}</option>
+      }
+    </select>
+  </label>
+</div>
 
 @if (actionError(); as error) {
   <p class="alert" role="alert">{{ error }}</p>
 }
 
-@if (tasks.isLoading()) {
-  <p class="state mono">Loading tasks…</p>
-} @else if (loadError(); as error) {
+@if (loadError(); as error) {
   <div class="state">
     <p class="alert" role="alert">{{ error }}</p>
     <button type="button" class="btn" (click)="tasks.reload()">Try again</button>
   </div>
-} @else {
-  <ol class="list">
-    @for (task of visible(); track task.id; let i = $index) {
+} @else if (result) {
+  <!-- Keep showing the previous page while the next one loads, just dimmed. -->
+  <ol class="list" [class.list--loading]="tasks.isLoading()">
+    @for (task of result.items; track task.id; let i = $index) {
       <li [style.animation-delay.ms]="i * 40">
         <app-task-card
           [task]="task"
@@ -53,13 +81,20 @@
       </li>
     } @empty {
       <li class="empty">
-        <p class="empty__title">
-          {{ filter() === 'done' ? 'Nothing finished yet.' : 'Your page is blank.' }}
-        </p>
-        @if (filter() !== 'done') {
+        @if (q.search) {
+          <p class="empty__title">No tasks match “{{ q.search }}”.</p>
+          <button type="button" class="btn" (click)="clearSearch()">Clear search</button>
+        } @else if (q.view === 'Done') {
+          <p class="empty__title">Nothing finished yet.</p>
+        } @else {
+          <p class="empty__title">Your page is blank.</p>
           <a routerLink="/tasks/new" class="btn">Write the first task</a>
         }
       </li>
     }
   </ol>
+
+  <app-pager [page]="result.page" [totalPages]="result.totalPages" (pageChange)="setPage($event)" />
+} @else {
+  <p class="state mono">Loading tasks…</p>
 }

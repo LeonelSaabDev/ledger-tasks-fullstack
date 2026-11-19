@@ -1,8 +1,15 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { ProblemDetails, Task, TaskRequest } from './task.model';
+import {
+  PagedResult,
+  ProblemDetails,
+  Task,
+  TaskListQuery,
+  TaskRequest,
+  TaskSummary,
+} from './task.model';
 
 export type TaskTransition = 'start' | 'complete' | 'reopen';
 
@@ -11,8 +18,21 @@ export class TasksApi {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/tasks`;
 
-  getAll(): Observable<Task[]> {
-    return this.http.get<Task[]>(this.baseUrl);
+  search(query: TaskListQuery): Observable<PagedResult<Task>> {
+    let params = new HttpParams()
+      .set('view', query.view)
+      .set('sortBy', query.sortBy)
+      .set('direction', query.direction)
+      .set('page', query.page);
+
+    const search = query.search.trim();
+    if (search) params = params.set('search', search);
+
+    return this.http.get<PagedResult<Task>>(this.baseUrl, { params });
+  }
+
+  summary(): Observable<TaskSummary> {
+    return this.http.get<TaskSummary>(`${this.baseUrl}/summary`);
   }
 
   getById(id: string): Observable<Task> {

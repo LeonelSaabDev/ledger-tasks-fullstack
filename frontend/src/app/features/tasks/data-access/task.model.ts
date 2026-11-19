@@ -25,6 +25,42 @@ export interface TaskRequest {
   dueDate: string | null;
 }
 
+export type TaskView = 'Open' | 'Done' | 'All';
+export type TaskSortBy = 'CreatedAt' | 'DueDate' | 'Priority';
+export type SortDirection = 'Asc' | 'Desc';
+
+/** What the list shows. Mirrors the API query string and the browser URL. */
+export interface TaskListQuery {
+  view: TaskView;
+  search: string;
+  sortBy: TaskSortBy;
+  direction: SortDirection;
+  page: number;
+}
+
+export const DEFAULT_TASK_QUERY: TaskListQuery = {
+  view: 'Open',
+  search: '',
+  sortBy: 'CreatedAt',
+  direction: 'Desc',
+  page: 1,
+};
+
+export interface PagedResult<T> {
+  items: T[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+}
+
+export interface TaskSummary {
+  open: number;
+  done: number;
+  overdue: number;
+  total: number;
+}
+
 /** Shape of an RFC 9457 problem response returned by the API. */
 export interface ProblemDetails {
   title?: string;
